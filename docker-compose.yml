@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  php-nginx:
+    image: docker.io/dirtylooks1306/devops_images:test
+    ports:
+      - "80:80"
+    volumes:
+      - ./src:/var/www/html
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

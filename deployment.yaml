@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-nginx-deployment
+  labels:
+    app: php-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: php-nginx
+  template:
+    metadata:
+      labels:
+        app: php-nginx
+    spec:
+      containers:
+        - name: php-nginx
+          image: docker.io/dirtylooks1306/devops_images:test
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "500m"
+            limits:
+              memory: "512Mi"
+              cpu: "1"
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-nginx-service
+spec:
+  selector:
+    app: php-nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
